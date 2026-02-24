@@ -1,0 +1,17 @@
+{
+    "data_format": 1,
+    "data_updated": "20231031T000000Z",
+    "project": { 
+        "name": "PeakFinder",
+        "description": "360° mountain panoramas and more",
+        "project_url": "https://www.peakfinder.com",
+        "icon_url": "https://www.peakfinder.com/favicon-32x32.png", 
+        "contact_name": "Fabio Soldati",
+        "contact_email": "info@peakfinder.com"
+    },
+"tags": [
+{ "key": "natural",  "value": "peak",  "object_types": ["node"]},
+{ "key": "natural",  "value": "volcano",  "object_types": ["node"]},
+{ "key": "natural",  "value": "hill",  "object_types": ["node"]}
+]
+}
