@@ -1,0 +1,16 @@
+{
+  "name": "earth-peakfinder",
+  "version": "1.0.0",
+  "description": "Panoramic mountain silhouette scanner — cast rays across terrain DEMs to generate 2D skyline profiles with peak identification",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["panorama", "peaks", "terrain", "skyline", "DEM", "elevation"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.0",
+    "dotenv": "^16.4.5"
+  }
+}
