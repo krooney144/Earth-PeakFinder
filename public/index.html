@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earth PeakFinder — Panoramic Skyline Scanner</title>
+
+  <!-- Leaflet (for the mini location-picker map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <style>
+    /* Leaflet marker icon fix */
+    .leaflet-default-icon-path { background-image: url(https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png); }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ---- Top nav ---- -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 22L9 10L13 16L17 8L25 22" stroke="#84D1DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="14" cy="5" r="2" fill="#84D1DB" opacity="0.6"/>
+      </svg>
+      <div>
+        <h1>Earth PeakFinder</h1>
+        <span>Panoramic Skyline Scanner</span>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn" id="btn-gps" title="Use GPS location">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        GPS
+      </button>
+      <button class="btn btn-primary" id="btn-scan" disabled>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 14L6 6L9 10L12 4L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Scan Panorama
+      </button>
+    </div>
+  </nav>
+
+  <!-- ---- Main area ---- -->
+  <div class="main">
+
+    <!-- ---- Side panel ---- -->
+    <aside class="panel">
+
+      <!-- Location picker map -->
+      <div class="panel-section">
+        <h3>Viewpoint Location</h3>
+        <div class="map-container">
+          <div id="mini-map"></div>
+          <div class="map-hint">Click map to set viewpoint</div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>Latitude</label>
+            <input type="number" id="input-lat" step="0.0001" placeholder="46.8523">
+          </div>
+          <div class="input-group">
+            <label>Longitude</label>
+            <input type="number" id="input-lng" step="0.0001" placeholder="8.3042">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Elevation (m)</label>
+            <input type="number" id="input-elev" step="1" placeholder="auto">
+          </div>
+          <div class="input-group">
+            <label>&nbsp;</label>
+            <button class="btn" id="btn-auto-elev" style="font-size: 12px; padding: 6px 10px;">
+              Auto-detect
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan settings -->
+      <div class="panel-section">
+        <h3>Scan Settings</h3>
+
+        <div class="range-row">
+          <label>Rays</label>
+          <input type="range" id="input-rays" min="180" max="1440" step="180" value="720">
+          <span class="range-value" id="val-rays">720</span>
+        </div>
+
+        <div class="range-row">
+          <label>Range</label>
+          <input type="range" id="input-range" min="50" max="300" step="25" value="200">
+          <span class="range-value" id="val-range">200km</span>
+        </div>
+
+        <div class="range-row">
+          <label>FOV</label>
+          <input type="range" id="input-fov" min="30" max="360" step="10" value="360">
+          <span class="range-value" id="val-fov">360&deg;</span>
+        </div>
+
+        <div class="range-row">
+          <label>Center Az</label>
+          <input type="range" id="input-center-az" min="0" max="359" step="1" value="180">
+          <span class="range-value" id="val-center-az">180&deg; S</span>
+        </div>
+      </div>
+
+      <!-- Saved viewpoints (future) -->
+      <div class="panel-section">
+        <h3>Quick Locations</h3>
+        <div id="quick-locations" style="display: flex; flex-direction: column; gap: 6px;">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ---- Canvas area ---- -->
+    <div class="canvas-area">
+      <canvas id="panorama-canvas"></canvas>
+
+      <!-- Welcome state -->
+      <div class="welcome" id="welcome">
+        <svg viewBox="0 0 48 48" fill="none" width="48" height="48">
+          <path d="M4 40L14 18L22 30L30 12L44 40" stroke="#4B8EA3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="24" cy="8" r="3" fill="#4B8EA3" opacity="0.5"/>
+        </svg>
+        <h2>Set a viewpoint to begin</h2>
+        <p>Click on the map, enter coordinates, or use GPS to set your position. Then press <strong>Scan Panorama</strong> to generate the mountain skyline.</p>
+      </div>
+
+      <!-- Loading overlay -->
+      <div class="loading-overlay hidden" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-message" id="loading-msg">Preparing...</div>
+        <div class="loading-bar">
+          <div class="loading-bar-fill" id="loading-bar"></div>
+        </div>
+      </div>
+
+      <!-- Cursor info tooltip -->
+      <div class="cursor-info" id="cursor-info"></div>
+
+      <!-- HUD bar -->
+      <div class="hud hidden" id="hud">
+        <div class="hud-item">
+          Position: <strong id="hud-pos">—</strong>
+        </div>
+        <div class="hud-item">
+          Elevation: <strong id="hud-elev">—</strong>
+        </div>
+        <div class="hud-item">
+          Rays: <strong id="hud-rays">—</strong>
+        </div>
+        <div class="hud-item">
+          Peaks found: <strong id="hud-peaks">—</strong>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ---- Scripts ---- -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/js/panorama.js"></script>
+<script src="/js/terrain.js"></script>
+<script src="/js/peaks.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>
