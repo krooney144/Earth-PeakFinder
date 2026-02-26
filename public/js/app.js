@@ -215,11 +215,7 @@
     }
 
     try {
-      // Filter sample distances by max range
-      const filteredSamples = Panorama.SAMPLE_KM.filter(d => d <= maxRange)
-      // The module uses its internal SAMPLE_KM; we pass numRays
-
-      // Calculate skyline
+      // Calculate skyline (returns { skyline, ridgeLayers, numRays })
       skylineData = await Panorama.calculateSkyline(
         viewLat, viewLng, viewElevM,
         numRays,
@@ -264,6 +260,7 @@
     const W = canvas.width
     const H = canvas.height
 
+    // drawPanorama now expects the full result object { skyline, ridgeLayers }
     const { angleToY, azToX } = Panorama.drawPanorama(ctx, W, H, skylineData, {
       fov,
       centerAzimuth: centerAz
@@ -271,10 +268,14 @@
     currentAngleToY = angleToY
     currentAzToX    = azToX
 
+    // Peak labels
     if (peaksData.length > 0) {
       Panorama.drawPeakLabels(ctx, W, H, peaksData, skylineData,
         viewLat, viewLng, angleToY, azToX)
     }
+
+    // Compass overlay
+    Panorama.drawCompassOverlay(ctx, W, H, centerAz)
   }
 
   // ---- Canvas sizing ----
@@ -316,11 +317,12 @@
     const azMin    = centerAz - fov / 2
     const az       = ((azMin + (mx / W) * fov) % 360 + 360) % 360
 
-    // Find nearest skyline ray
-    const numRays = skylineData.length
+    // Find nearest skyline ray (skylineData is now { skyline, ridgeLayers })
+    const sky     = skylineData.skyline
+    const numRays = sky.length
     const azStep  = 360 / numRays
     const idx     = Math.round(az / azStep) % numRays
-    const s       = skylineData[idx]
+    const s       = sky[idx]
 
     if (s) {
       const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW']
