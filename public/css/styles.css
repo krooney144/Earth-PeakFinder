@@ -303,7 +303,7 @@ html, body {
   display: flex;
   flex-direction: column;
   position: relative;
-  background: #030810;
+  background: #f5f0e8;
   overflow: hidden;
 }
 
@@ -322,7 +322,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(3, 8, 16, 0.92);
+  background: rgba(245, 240, 232, 0.94);
   z-index: 200;
   gap: 16px;
   transition: opacity 0.3s;
@@ -336,8 +336,8 @@ html, body {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--ec-border);
-  border-top-color: var(--ec-glow);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: rgba(0, 0, 0, 0.5);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -348,20 +348,20 @@ html, body {
 
 .loading-message {
   font-size: 13px;
-  color: var(--ec-text-secondary);
+  color: #333;
 }
 
 .loading-bar {
   width: 200px;
-  height: 4px;
-  background: var(--ec-bg-elevated);
+  height: 3px;
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .loading-bar-fill {
   height: 100%;
-  background: var(--ec-glow);
+  background: rgba(0, 0, 0, 0.35);
   border-radius: 2px;
   transition: width 0.3s;
   width: 0%;
@@ -377,21 +377,22 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  color: var(--ec-text-muted);
+  color: #888;
   text-align: center;
   padding: 40px;
 }
 
 .welcome h2 {
   font-size: 18px;
-  color: var(--ec-text-secondary);
-  font-weight: 500;
+  color: #555;
+  font-weight: 400;
 }
 
 .welcome p {
   font-size: 13px;
   max-width: 360px;
   line-height: 1.6;
+  color: #888;
 }
 
 .welcome.hidden {
@@ -409,10 +410,10 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 6px 16px;
-  background: rgba(8, 20, 35, 0.88);
-  border-top: 1px solid var(--ec-border);
+  background: rgba(245, 240, 232, 0.92);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
   font-size: 11px;
-  color: var(--ec-text-muted);
+  color: #777;
   z-index: 50;
 }
 
@@ -427,7 +428,7 @@ html, body {
 }
 
 .hud-item strong {
-  color: var(--ec-text-accent);
+  color: #444;
   font-weight: 500;
 }
 
@@ -435,16 +436,17 @@ html, body {
 
 .cursor-info {
   position: absolute;
-  padding: 6px 10px;
-  background: var(--ec-bg-overlay);
-  border: 1px solid var(--ec-border);
-  border-radius: 5px;
+  padding: 5px 9px;
+  background: rgba(255, 255, 252, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
   font-size: 11px;
-  color: var(--ec-text-secondary);
+  color: #333;
   pointer-events: none;
   z-index: 150;
   white-space: nowrap;
   display: none;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
 }
 
 /* ---- Responsive ---- */
